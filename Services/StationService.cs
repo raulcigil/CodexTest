@@ -1,4 +1,8 @@
-﻿using Org.BouncyCastle.Bcpg.Sig;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Org.BouncyCastle.Bcpg.Sig;
 using Serilog;
 using TestPlan.Entities.Views;
 using TestPlan.Logic.Interfaces;
@@ -136,11 +140,21 @@ namespace TestPlan.Logic.Services
         #region Stop / Dispose
 
         /// <summary>
-        /// Stops the trigger listener.
+        /// Stops the station and the trigger listener.
         /// </summary>
         public void Stop()
         {
             _triggerListener?.StopListening();
+            _cts.Cancel();
+
+            try
+            {
+                _stationTask?.Wait();
+            }
+            catch (AggregateException ex) when (ex.InnerException is OperationCanceledException)
+            {
+                // Ignorar cancelaciones esperadas
+            }
         }
 
         /// <summary>
@@ -149,7 +163,7 @@ namespace TestPlan.Logic.Services
         public void Dispose()
         {
             Stop();
-
+            _cts.Dispose();
         }
 
         #endregion
