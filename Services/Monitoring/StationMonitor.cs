@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using TestPlan.Logic.Models;
 
 public class StationMonitor
@@ -57,9 +58,9 @@ public class StationMonitor
     #endregion
 
     #region Funciones para compartir con el MVVM el status y bindear al front
-    public IReadOnlyCollection<StationModel> GetAllStationStatuses() =>
-    _stationStatuses.Values.ToList();
-    public IReadOnlyCollection<SlotModel> GetAllSlotStatuses() =>
-        _slotStatuses.Values.ToList();
+    public IEnumerable<StationModel> GetAllStationStatuses() =>
+        _stationStatuses.Values;
+    public IEnumerable<SlotModel> GetAllSlotStatuses() =>
+        _slotStatuses.Values;
     #endregion
 }
